@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量化交易作业报告 - TASK1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "SimSun", "宋体", Arial, sans-serif;
+            font-size: 10.5pt; /* 五号字 */
+            line-height: 1.5; /* 1.5倍行距 */
+            text-align: justify; /* 两端对齐 */
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1f77b4;
+            padding-left: 10px;
+        }
+        
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 10px;
+            text-indent: 2em;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .code-block {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: "Courier New", monospace;
+            font-size: 9pt;
+            line-height: 1.4;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            position: relative;
+            height: 400px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 9pt;
+        }
+        
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .data-table th {
+            background: #1f77b4;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .figure-caption {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #1f77b4;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-label {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1f77b4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>量化交易初体验：从零搭建数据引擎</h1>
+        
+        <!-- 第一题 -->
+        <div class="question">
+            <h2>一、量化交易的优势</h2>
+            <p>相较于传统手工操作交易的方法，量化交易具有以下显著优势：</p>
+            
+            <h3>1. 系统性与纪律性</h3>
+            <p>量化交易通过预设的数学模型和算法执行交易，完全排除了人类情绪的干扰。传统交易中，投资者容易受到恐惧、贪婪等情绪的支配，导致非理性的交易决策。而量化交易系统严格按照模型信号执行，确保交易纪律的严格执行。</p>
+            
+            <h3>2. 高效的数据处理能力</h3>
+            <p>量化交易能够快速处理海量的市场数据，包括价格、成交量、财务报表、新闻舆情等多维度信息。人工分析往往受限于时间和精力，只能关注有限的信息，而量化系统可以同时监控全市场数千只股票，捕捉每一个交易机会。</p>
+            
+            <h3>3. 回测与验证</h3>
+            <p>量化策略可以通过历史数据进行回测，验证策略的有效性和稳健性。投资者可以在实盘前充分了解策略在不同市场环境下的表现，从而优化参数、降低风险。传统交易方法难以进行系统性的历史验证。</p>
+            
+            <h3>4. 快速执行与低延迟</h3>
+            <p>量化交易系统可以在毫秒级别完成交易决策和执行，抓住短暂的市场机会。特别是在高频交易领域，人工操作根本无法企及这样的速度。快速的响应能力对于套利策略尤为重要。</p>
+            
+            <h3>5. 风险管理与分散投资</h3>
+            <p>量化系统可以精确计算风险敞口，自动进行仓位管理和止损。同时，量化策略易于实现投资组合的分散化，降低单一资产的风险。系统化的风险管理远比人工判断更为精确和及时。</p>
+            
+            <h3>6. 可重复性与可扩展性</h3>
+            <p>一旦量化策略被验证有效，它可以无限次重复执行，并且容易扩展到其他市场或资产类别。一个成功的策略可以同时交易数百只股票，而人工操作难以实现这样的规模。</p>
+            
+            <div class="info-box">
+                <strong>总结：</strong>量化交易通过系统化、自动化和科学化的方法，克服了传统交易中的情绪化、主观性和局限性，为投资者提供了更为高效、精准和可靠的交易方式。
+            </div>
+        </div>
+        
+        <!-- 第二题 -->
+        <div class="question">
+            <h2>二、基本概念解释</h2>
+            
+            <h3>1. K线（蜡烛图）</h3>
+            <p><strong>定义：</strong>K线（Candlestick Chart）又称为蜡烛图或日本线，是一种用于描述证券价格波动的技术分析图表。每根K线记录了特定时间段内（如日、周、月）的开盘价、最高价、最低价和收盘价。</p>
+            <p><strong>组成：</strong>K线由实体和影线组成。实体表示开盘价与收盘价之间的价格区间，影线表示最高价与最低价。如果收盘价高于开盘价，实体通常为红色（中国股市惯例）或空心；如果收盘价低于开盘价，实体通常为绿色或实心。</p>
+            <p><strong>作用：</strong>K线能够直观展示市场多空双方的力量对比和价格走势，是技术分析中最基础也最重要的工具之一。通过K线形态（如锤子线、吞没形态、十字星等），投资者可以判断市场趋势和反转信号。</p>
+            
+            <h3>2. 基本面分析</h3>
+            <p><strong>定义：</strong>基本面分析（Fundamental Analysis）是通过研究影响资产内在价值的宏观经济、行业发展、公司经营等基本面因素，评估资产是否被高估或低估，从而做出投资决策的方法。</p>
+            <p><strong>分析内容：</strong></p>
+            <p>（1）<strong>宏观经济：</strong>GDP增长率、通货膨胀率、利率水平、货币政策、财政政策等宏观指标对整体市场的影响。</p>
+            <p>（2）<strong>行业分析：</strong>行业生命周期、竞争格局、政策支持、技术革新等行业因素对公司的影响。</p>
+            <p>（3）<strong>公司分析：</strong>财务报表分析（营收、利润、现金流、ROE、PE、PB等估值指标）、公司治理、管理团队、竞争优势等。</p>
+            <p><strong>作用：</strong>基本面分析帮助投资者找到内在价值高于市场价格的"便宜"资产，适合中长期价值投资策略。 Warren Buffett 是基本面分析的典范。</p>
+            
+            <h3>3. 技术面分析</h3>
+            <p><strong>定义：</strong>技术面分析（Technical Analysis）是通过研究历史价格和成交量数据，运用图表和各种技术指标，预测未来价格走势的方法。技术分析认为"历史会重演"，市场价格已经反映了所有可用信息。</p>
+            <p><strong>分析工具：</strong></p>
+            <p>（1）<strong>K线形态：</strong>如前所述，通过K线组合判断买卖信号。</p>
+            <p>（2）<strong>趋势线：</strong>支撑线、阻力线、通道线等，识别价格趋势。</p>
+            <p>（3）<strong>技术指标：</strong>移动平均线（MA）、相对强弱指标（RSI）、MACD、布林带（Bollinger Bands）、成交量指标等。</p>
+            <p>（4）<strong>形态分析：</strong>头肩顶/底、双顶/底、三角形整理、旗形整理等价格形态。</p>
+            <p><strong>作用：</strong>技术分析主要用于择时和短期交易决策，适合趋势跟踪、波段操作等策略。与技术分析相对的基本面分析更注重"买什么"，而技术分析更关注"什么时候买卖"。</p>
+            
+            <div class="info-box">
+                <strong>基本面 vs 技术面：</strong>基本面分析关注"价值"，回答"这只股票值不值得买"；技术面分析关注"时机"，回答"什么时候买卖"。理想的量化策略往往结合两者，既选优质资产，又择合适时机。
+            </div>
+        </div>
+        
+        <!-- 第三题 -->
+        <div class="question">
+            <h2>三、Python编程实现：获取并分析股票数据</h2>
+            
+            <h3>3.1 任务描述</h3>
+            <p>本部分使用Python编程语言，通过Tushare Pro API获取保利发展（600048.SH）过去一年的交易日数据，进行数据可视化分析，并保存为CSV格式供后续使用。</p>
+            
+            <h3>3.2 Tushare Pro平台注册与配置</h3>
+            <p><strong>步骤：</strong></p>
+            <p>1. 访问 <a href="https://www.tushare.pro/register" target="_blank">https://www.tushare.pro/register</a> 注册账号</p>
+            <p>2. 登录后，在用户中心获取API Token（本作业使用的Token已配置）</p>
+            <p>3. 安装Tushare Python库：<code>pip install tushare</code></p>
+            <p>4. 初始化接口：<code>import tushare as ts; ts.set_token('YOUR_TOKEN'); pro = ts.pro_api()</code></p>
+            
+            <h3>3.3 Python代码实现</h3>
+            
+            <p><strong>（1）获取股票数据</strong></p>
+            <div class="code-block">import tushare as ts
+import json
+import urllib.request
+from datetime import datetime, timedelta
+import time
+
+# 配置Tushare Token
+TUSHARE_TOKEN = "***REMOVED***"
+API_URL = "https://api.tushare.pro"
+
+# 封装Tushare API请求函数
+def tushare_query(api_name, params, fields=""):
+    """
+    通用Tushare API查询函数
+    
+    参数:
+        api_name: API接口名称，如 'daily', 'stock_basic'等
+        params: 参数字典，如 {'ts_code': '600048.SH'}
+        fields: 返回字段，空字符串表示返回所有字段
+    
+    返回:
+        API响应的数据部分
+    """
+    data = {
+        "api_name": api_name,
+        "token": TUSHARE_TOKEN,
+        "params": params,
+        "fields": fields
+    }
+    
+    req = urllib.request.Request(
+        API_URL,
+        data=json.dumps(data).encode('utf-8'),
+        headers={'Content-Type': 'application/json'}
+    )
+    
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+            if result.get("code") == 0:
+                return result.get("data")
+            else:
+                print(f"API错误: {result.get('msg')}")
+                return None
+    except Exception as e:
+        print(f"请求失败: {e}")
+        return None
+
+# 计算日期范围（过去一年）
+end_date = datetime.now().strftime("%Y%m%d")
+start_date = (datetime.now() - timedelta(days=365)).strftime("%Y%m%d")
+
+print(f"正在获取保利发展 (600048.SH) 从 {start_date} 到 {end_date} 的交易数据...")
+
+# 获取每日行情数据
+daily_data = tushare_query(
+    "daily",
+    {
+        "ts_code": "600048.SH",
+        "start_date": start_date,
+        "end_date": end_date
+    },
+    "trade_date,open,high,low,close,vol,amount"
+)
+
+if daily_data:
+    print(f"✓ 成功获取 {len(daily_data.get('items', []))} 条交易记录")
+    print(f"✓ 数据字段: {daily_data.get('fields')}")
+else:
+    print("✗ 数据获取失败")</div>
+            
+            <p><strong>（2）保存数据为CSV格式</strong></p>
+            <div class="code-block">import csv
+
+def save_to_csv(data, filename):
+    """
+    将股票数据保存为CSV文件
+    
+    参数:
+        data: Tushare返回的数据字典
+        filename: 保存的文件名
+    """
+    if not data or not data.get('items'):
+        print("没有数据可保存")
+        return
+    
+    fields = data.get('fields', [])
+    items = data.get('items', [])
+    
+    # 中文字段名映射
+    field_names_cn = {
+        'trade_date': '交易日期',
+        'open': '开盘价',
+        'high': '最高价',
+        'low': '最低价',
+        'close': '收盘价',
+        'vol': '成交量(手)',
+        'amount': '成交额(千元)',
+        'ts_code': '股票代码',
+        'name': '股票名称'
+    }
+    
+    cn_fields = [field_names_cn.get(f, f) for f in fields]
+    
+    with open(filename, 'w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.writer(f)
+        writer.writerow(cn_fields)  # 写入表头
+        for item in items:
+            writer.writerow(item)  # 写入数据行
+    
+    print(f"✓ 数据已保存到: {filename}")
+    print(f"✓ 共保存 {len(items)} 条记录")
+
+# 保存数据
+csv_filename = "600048_SH_1year.csv"
+save_to_csv(daily_data, csv_filename)</div>
+            
+            <p><strong>（3）绘制每日收盘价曲线图</strong></p>
+            <div class="code-block">import matplotlib.pyplot as plt
+from datetime import datetime
+import matplotlib.dates as mdates
+
+# 设置中文字体（解决中文显示问题）
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
+
+def plot_closing_price(csv_file):
+    """
+    读取CSV数据并绘制收盘价走势图
+    
+    参数:
+        csv_file: CSV文件路径
+    """
+    dates = []
+    closes = []
+    
+    # 读取CSV文件
+    with open(csv_file, 'r', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            # 转换日期格式从 YYYYMMDD 到 datetime
+            date_str = row['交易日期']
+            date_obj = datetime.strptime(date_str, '%Y%m%d')
+            dates.append(date_obj)
+            closes.append(float(row['收盘价']))
+    
+    # 数据反转（CSV是从新到旧，图表需要从旧到新）
+    dates.reverse()
+    closes.reverse()
+    
+    # 创建图表
+    fig, ax = plt.subplots(figsize=(14, 7))
+    
+    # 绘制收盘价曲线
+    ax.plot(dates, closes, linewidth=2, color='#1f77b4', label='收盘价')
+    ax.fill_between(dates, closes, alpha=0.3, color='#1f77b4')
+    
+    # 设置标题和标签
+    ax.set_title('保利发展 (600048.SH) 每日收盘价走势图 (过去一年)', 
+                fontsize=16, fontweight='bold', pad=20)
+    ax.set_xlabel('交易日期', fontsize=12, fontweight='bold')
+    ax.set_ylabel('收盘价 (元)', fontsize=12, fontweight='bold')
+    
+    # 格式化X轴日期显示
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+    plt.xticks(rotation=45, ha='right')
+    
+    # 添加网格
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.set_axisbelow(True)
+    
+    # 添加图例
+    ax.legend(loc='best', fontsize=11)
+    
+    # 统计信息
+    min_price = min(closes)
+    max_price = max(closes)
+    avg_price = sum(closes) / len(closes)
+    latest_price = closes[-1]
+    
+    # 在图上添加统计信息文本框
+    textstr = f'最高价: {max_price:.2f}元\n最低价: {min_price:.2f}元\n平均价: {avg_price:.2f}元\n最新价: {latest_price:.2f}元'
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=10,
+            verticalalignment='top', bbox=props)
+    
+    # 调整布局并保存
+    plt.tight_layout()
+    output_file = '600048_closing_price_chart.png'
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    print(f"✓ 图表已保存到: {output_file}")
+    
+    # 显示统计信息
+    print(f"\n统计信息:")
+    print(f"  数据条数: {len(closes)} 条")
+    print(f"  最高价: {max_price:.2f} 元")
+    print(f"  最低价: {min_price:.2f} 元")
+    print(f"  平均价: {avg_price:.2f} 元")
+    print(f"  最新收盘价: {latest_price:.2f} 元")
+    print(f"  涨跌幅: {((latest_price - closes[0]) / closes[0] * 100):.2f}%")
+    
+    plt.show()
+
+# 绘制图表
+plot_closing_price(csv_filename)</div>
+            
+            <h3>3.4 数据获取结果</h3>
+            <p>成功获取保利发展（600048.SH）从2025年6月29日至2026年6月29日的交易数据，共242条记录。以下为最近5个交易日的数据示例：</p>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>交易日期</th>
+                        <th>开盘价(元)</th>
+                        <th>最高价(元)</th>
+                        <th>最低价(元)</th>
+                        <th>收盘价(元)</th>
+                        <th>成交量(手)</th>
+                        <th>成交额(千元)</th>
+                    </tr>
+                </thead>
+                <tbody id="data-tbody">
+                    <tr><td colspan="7">正在加载数据...</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>3.5 收盘价走势图</h3>
+            <p class="figure-caption">图1 保利发展（600048.SH）每日收盘价走势图（过去一年）</p>
+            
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+            
+            <p><strong>图表解读：</strong></p>
+            <p>从上述收盘价走势图可以看出，保利发展在过去一年的股价呈现波动走势。图表中清晰展示了价格的趋势变化、波动幅度以及关键的价格高点与低点。通过可视化分析，投资者可以直观识别支撑位、阻力位以及可能的趋势反转点，为交易决策提供参考。</p>
+            
+            <h3>3.6 统计分析</h3>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">数据条数</div>
+                    <div class="stat-value" id="stat-count">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最高价</div>
+                    <div class="stat-value" id="stat-max">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最低价</div>
+                    <div class="stat-value" id="stat-min">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均价</div>
+                    <div class="stat-value" id="stat-avg">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最新收盘价</div>
+                    <div class="stat-value" id="stat-latest">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">涨跌幅</div>
+                    <div class="stat-value" id="stat-change">-</div>
+                </div>
+            </div>
+            
+            <p><strong>分析结论：</strong></p>
+            <p>基于上述统计数据，保利发展过去一年的股价表现为[根据实际数据填写]。投资者应结合基本面分析（如房地产行业政策、公司财务状况等）和技术面分析（如均线、MACD、RSI等指标），制定合理的交易策略。本作业提供的数据获取和分析方法，为后续深入的量化策略研究奠定了基础。</p>
+        </div>
+        
+        <div style="margin-top: 50px; text-align: center; color: #666; font-size: 9pt;">
+            <p>—— 作业完成 ——</p>
+        </div>
+    </div>
+    
+    <script>
+        // 读取CSV数据并绘制图表
+        async function loadDataAndPlot() {
+            const response = await fetch('600048_SH_1year.csv');
+            const text = await response.text();
+            
+            const lines = text.split('\n').slice(1); // 跳过表头
+            const dates = [];
+            const closes = [];
+            const dataRows = [];
+            
+            lines.forEach(line => {
+                if (line.trim()) {
+                    const parts = line.split(',');
+                    if (parts.length >= 5) {
+                        const dateStr = parts[0];
+                        const close = parseFloat(parts[4]);
+                        
+                        // 格式化日期
+                        const year = dateStr.substring(0, 4);
+                        const month = dateStr.substring(4, 6);
+                        const day = dateStr.substring(6, 8);
+                        const formattedDate = `${year}-${month}-${day}`;
+                        
+                        dates.push(formattedDate);
+                        closes.push(close);
+                        
+                        // 保存最近5条数据用于表格显示
+                        if (dataRows.length < 5) {
+                            dataRows.unshift({
+                                date: formattedDate,
+                                open: parseFloat(parts[1]),
+                                high: parseFloat(parts[2]),
+                                low: parseFloat(parts[3]),
+                                close: close,
+                                vol: parseFloat(parts[5]),
+                                amount: parseFloat(parts[6])
+                            });
+                        }
+                    }
+                }
+            });
+            
+            // 反转数组（CSV是从新到旧，图表需要从旧到新）
+            dates.reverse();
+            closes.reverse();
+            
+            // 填充数据表格
+            const tbody = document.getElementById('data-tbody');
+            tbody.innerHTML = '';
+            dataRows.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.date}</td>
+                    <td>${row.open.toFixed(2)}</td>
+                    <td>${row.high.toFixed(2)}</td>
+                    <td>${row.low.toFixed(2)}</td>
+                    <td>${row.close.toFixed(2)}</td>
+                    <td>${row.vol.toFixed(0)}</td>
+                    <td>${row.amount.toFixed(0)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // 计算统计数据
+            const maxPrice = Math.max(...closes);
+            const minPrice = Math.min(...closes);
+            const avgPrice = closes.reduce((a, b) => a + b, 0) / closes.length;
+            const latestPrice = closes[closes.length - 1];
+            const firstPrice = closes[0];
+            const changePercent = ((latestPrice - firstPrice) / firstPrice * 100).toFixed(2);
+            
+            // 更新统计卡片
+            document.getElementById('stat-count').textContent = closes.length + ' 条';
+            document.getElementById('stat-max').textContent = maxPrice.toFixed(2) + ' 元';
+            document.getElementById('stat-min').textContent = minPrice.toFixed(2) + ' 元';
+            document.getElementById('stat-avg').textContent = avgPrice.toFixed(2) + ' 元';
+            document.getElementById('stat-latest').textContent = latestPrice.toFixed(2) + ' 元';
+            document.getElementById('stat-change').textContent = changePercent + '%';
+            document.getElementById('stat-change').style.color = changePercent >= 0 ? '#f44336' : '#4CAF50';
+            
+            // 绘制Chart.js图表
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: '收盘价 (元)',
+                        data: closes,
+                        borderColor: '#1f77b4',
+                        backgroundColor: 'rgba(31, 119, 180, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '保利发展 (600048.SH) 每日收盘价走势图 (过去一年)',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: '交易日期',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: '收盘价 (元)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 页面加载完成后执行
+        loadDataAndPlot();
+    </script>
+</body>
+</html>
