@@ -1,0 +1,18 @@
+# ===== 敏感信息：切勿提交 =====
+.mcp.json
+ssh_config_note.txt
+
+# ===== macOS =====
+.DS_Store
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ===== 编辑器/工具 =====
+.workbuddy/
+.idea/
+.vscode/
